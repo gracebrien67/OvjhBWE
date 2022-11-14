@@ -9,7 +9,6 @@ func Test_NoRewrites(t *testing.T) {
 	for _, str := range []string{
 		`INSERT INTO "names" VALUES (1, 'bob', '123-45-678')`,
 		`INSERT INTO "names" VALUES (RANDOM(), 'bob', '123-45-678')`,
-		`SELECT title FROM albums ORDER BY RANDOM()`,
 		`INSERT INTO foo(name, age) VALUES(?, ?)`,
 	} {
 
@@ -51,7 +50,6 @@ func Test_NoRewritesMulti(t *testing.T) {
 	if stmts[1].Sql != `INSERT INTO "names" VALUES (RANDOM(), 'bob', '123-45-678')` {
 		t.Fatalf("SQL is modified: %s", stmts[0].Sql)
 	}
-	if stmts[2].Sql != `SELECT title FROM albums ORDER BY RANDOM()` {
 		t.Fatalf("SQL is modified: %s", stmts[0].Sql)
 	}
 }
@@ -64,7 +62,6 @@ func Test_Rewrites(t *testing.T) {
 		`SELECT RANDOM()`, `SELECT -?[0-9]+`,
 		`CREATE TABLE tbl (col1 TEXT, ts DATETIME DEFAULT CURRENT_TIMESTAMP)`, `CREATE TABLE tbl \(col1 TEXT, ts DATETIME DEFAULT CURRENT_TIMESTAMP\)`,
 	}
-	for i := 0; i < len(testSQLs)-1; i += 2 {
 		stmts := []*Statement{
 			{
 				Sql: testSQLs[i],
